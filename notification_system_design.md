@@ -1,5 +1,6 @@
 <b>Campus Notification Platform API Contract</b>
 
+<b>STAGE 1 <b>
 Base URL:
 https://api.campusnotify.io/
 
@@ -279,3 +280,9 @@ Event:
 "type": "result"
 }
 }
+
+# **Stage 2 — Basic System Design**
+
+**DB Choice:** Relational (PostgreSQL/MySQL) safe for small structured data
+**Schema:** Users(id), Notifications(id, user_id, type, message, is_read, created_at)
+**Scaling Issue:** Joins + growing rows slow queries → add indexing on user_id, created_at
