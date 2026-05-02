@@ -342,3 +342,42 @@ Cache frequent queries, offload reads to replicas, queue writes
 Eventual consistency, cache invalidation complexity, infra cost
 
 ---
+
+# **Stage 5 High Load Notification System**
+
+**Shortcomings in pseudo code?**
+Sequential processing, no retry, blocking I/O, no failure handling
+
+**If email fails for 200 students?**
+Retry mechanism needed, store failed jobs in queue
+
+**How to redesign?**
+Use queue , async workers, batch processing
+
+**Should email + DB happen together?**
+No, decoupling is better since DB will write first, async email for reliability
+
+**Revised Pseudocode:**
+
+```js id="q3"
+function notifyAll(studentIds, message) {
+  for (let id of studentIds) {
+    queue.push({ type: "SAVE_DB", id, message });
+    queue.push({ type: "PUSH_APP", id, message });
+    queue.push({ type: "SEND_EMAIL", id, message });
+  }
+}
+
+worker() {
+  while (queue.notEmpty()) {
+    job = queue.pop();
+    try {
+      if (job.type === "SAVE_DB") saveToDB(job);
+      if (job.type === "PUSH_APP") pushToApp(job);
+      if (job.type === "SEND_EMAIL") sendEmail(job);
+    } catch {
+      retryQueue.push(job);
+    }
+  }
+}
+```
