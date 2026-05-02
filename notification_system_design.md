@@ -381,3 +381,9 @@ worker() {
   }
 }
 ```
+
+# **Stage 6 — Solution Explanation**
+
+Used weighted scoring combining priority (placement > result > event) and timestamp to rank notifications.
+Fetched all notifications via API, computed score per item, and sorted in descending order.
+Returned top N results based on user input, with error logging handled via centralized Log function.
