@@ -329,3 +329,16 @@ WHERE createdat >= NOW() - INTERVAL 7 DAY;
 ```
 
 ---
+
+# **Stage 4 DB Overload**
+
+**What solution suggested?**
+Introduce caching, async processing and read replicas
+
+**How performance improved?**
+Cache frequent queries, offload reads to replicas, queue writes
+
+**Tradeoffs:**
+Eventual consistency, cache invalidation complexity, infra cost
+
+---
