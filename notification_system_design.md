@@ -281,8 +281,51 @@ Event:
 }
 }
 
-# **Stage 2 — Basic System Design**
+# **Stage 2 - Basic System Design**
 
 **DB Choice:** Relational (PostgreSQL/MySQL) safe for small structured data
 **Schema:** Users(id), Notifications(id, user_id, type, message, is_read, created_at)
 **Scaling Issue:** Joins + growing rows slow queries → add indexing on user_id, created_at
+
+---
+
+# **Stage 3 — Scaling Strategy**
+
+**SQL or NoSQL?** Though sql provides consistency its better to switch to NOSQL
+**Schema Change:** Denormalize notifications (embed user_id, type, timestamp)
+**Problem:** High volume reads/writes → Solution: add Redis cache + partition tables
+
+---
+
+# **Stage 3 Query Optimization**
+
+**Is query accurate?**
+Yes logically correct but inefficient without indexes
+
+**Why slow at 5M rows?**
+Full table is scanned and no index on (studid, isread, createdat)
+
+**What changes improve performance?**
+Composite index and pagination and limit queries can be added
+
+**Is this advice effective?**
+Yes reduces scan to index lookup which results in major speed improvement
+
+**Optimized Query:**
+
+```sql id="q1"
+SELECT * FROM noti
+WHERE studid = 1042 AND isread = false
+ORDER BY createdat DESC
+LIMIT 50;
+```
+
+**Query for notifications in last 7 days:**
+
+```sql id="q2"
+SELECT DISTINCT studid
+FROM noti
+WHERE createdat >= NOW() - INTERVAL 7 DAY;
+```
+
+---
